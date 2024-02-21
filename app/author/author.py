@@ -1,4 +1,5 @@
 from app.author.accessor import AuthorAccessor
+from app.post import post as post_business
 
 
 class Author:
@@ -19,4 +20,5 @@ class Author:
 
     @staticmethod
     def delete_author(id):
+        post_business.Post.delete_posts_by_author(id)
         AuthorAccessor.delete_author(id)
