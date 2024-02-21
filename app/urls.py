@@ -1,6 +1,7 @@
 from django.urls import path, include
 from app.author import view as author_view
 from app.category import view as categories_view
+from app.post import view as post_view
 
 urlpatterns = [
     path('v1/authors/', author_view.get_all_authors, name='get_all_authors'),
@@ -34,4 +35,19 @@ urlpatterns = [
         categories_view.delete_category,
         name='delete_category',
     ),
+    path('v1/posts/', post_view.get_all_posts, name='get_all_posts'),
+    path('v1/posts/<str:id>', post_view.get_post_by_id, name='get_post_by_id'),
+    path('v1/posts/create/', post_view.create_post, name='create_post'),
+    path('v1/posts/update/<str:id>', post_view.update_post, name='update_post'),
+    path(
+        'v1/posts/author/<str:id>',
+        post_view.get_posts_by_author,
+        name='get_posts_by_author',
+    ),
+    path(
+        'v1/posts/category/<str:id>',
+        post_view.get_posts_of_category,
+        name='get_posts_of_category',
+    ),
+    path('v1/posts/delete/<str:id>', post_view.delete_post, name='delete_post'),
 ]
