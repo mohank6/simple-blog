@@ -32,7 +32,29 @@ class Author(BaseModel):
 
 
 class Category(BaseModel):
-    name = models.CharField(max_length=255, unique=True)
+
+    TECHNOLOGY = "Technology"
+    LIFESTYLE = "Lifestyle"
+    BUSINESS = "Business"
+    SCIENCE = "Science"
+    ENTERTAINMENT = "Entertainment"
+    EDUCATION = "Education"
+    SPORTS = "Sports"
+    TRAVEL = "Travel"
+    OTHER = "Other"
+
+    CATEGORY_CHOICES = (
+        (TECHNOLOGY, "Technology and Gadgets"),
+        (LIFESTYLE, "Lifestyle and Fashion"),
+        (BUSINESS, "Business and Entrepreneurship"),
+        (SCIENCE, "Science and Innovation"),
+        (ENTERTAINMENT, "Entertainment and Pop Culture"),
+        (EDUCATION, "Education and Learning"),
+        (SPORTS, "Sports and Fitness"),
+        (TRAVEL, "Travel and Adventure"),
+        (OTHER, "Other"),
+    )
+    name = models.CharField(max_length=255, unique=True, choices=CATEGORY_CHOICES)
     description = models.TextField(blank=True)
 
     def __str__(self):
