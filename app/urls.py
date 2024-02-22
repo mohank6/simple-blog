@@ -2,6 +2,7 @@ from django.urls import path, include
 from app.author import view as author_view
 from app.category import view as categories_view
 from app.post import view as post_view
+from app.comment import view as comment_view
 
 urlpatterns = [
     path('v1/authors/', author_view.get_all_authors, name='get_all_authors'),
@@ -50,4 +51,24 @@ urlpatterns = [
         name='get_posts_of_category',
     ),
     path('v1/posts/delete/<str:id>', post_view.delete_post, name='delete_post'),
+    path('v1/comments/', comment_view.get_all_comments, name='get_all_comments'),
+    path(
+        'v1/comments/<str:id>', comment_view.get_comment_by_id, name='get_comment_by_id'
+    ),
+    path(
+        'v1/comments/post/<str:id>',
+        comment_view.get_all_comments_of_post,
+        name='get_all_comments_of_post',
+    ),
+    path('v1/comments/create/', comment_view.create_comment, name='create_comment'),
+    path(
+        'v1/comments/update/<str:id>',
+        comment_view.update_comment,
+        name='update_comment',
+    ),
+    path(
+        'v1/comments/delete/<str:id>',
+        comment_view.delete_comment,
+        name='delete_comment',
+    ),
 ]
