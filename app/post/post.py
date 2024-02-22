@@ -1,6 +1,7 @@
 from app.post.accessor import PostAccessor
 from app.author import author as author_business
 from app.category import category as category_business
+from app.comment import comment as comment_business
 
 
 class Post:
@@ -53,4 +54,5 @@ class Post:
         post = PostAccessor.get_post_by_id(id)
         if not post:
             raise ValueError
+        comment_business.Comment.delete_all_comments_of_post(post)
         PostAccessor.delete_post(id)

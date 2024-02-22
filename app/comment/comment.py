@@ -37,9 +37,5 @@ class Comment:
         CommentAccessor.delete_comment(id)
 
     @staticmethod
-    def delete_all_comments_of_post(id):
-        try:
-            post = post_business.Post.get_post_by_id(id)
-        except ValueError as e:
-            raise e
+    def delete_all_comments_of_post(post):
         CommentAccessor.delete_all_comments_of_post(post)
