@@ -72,3 +72,15 @@ class Post(BaseModel):
 
     def __str__(self):
         return self.title
+
+
+class Comment(BaseModel):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
+    name = models.CharField(max_length=255)
+    email = models.EmailField()
+    content = models.TextField()
+    is_approved = models.BooleanField(default=False)
+    is_deleted = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.name} commented {self.content}"
