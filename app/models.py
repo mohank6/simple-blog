@@ -84,3 +84,6 @@ class Comment(BaseModel):
 
     def __str__(self):
         return f"{self.name} commented {self.content}"
+
+    class Meta:
+        unique_together = ['post', 'email']
