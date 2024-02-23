@@ -37,6 +37,10 @@ class ResponseBuilder:
         self.status = status.HTTP_202_ACCEPTED
         return self
 
+    def no_content_204(self):
+        self.status = status.HTTP_204_NO_CONTENT
+        return self
+
     def not_found_404(self):
         self.status = status.HTTP_404_NOT_FOUND
         return self
@@ -116,6 +120,9 @@ class ResponseBuilder:
             .get_response()
         )
 
+    def get_204_no_content_response(self, message):
+        return self.success().no_content_204().message(message).get_response()
+
     def get_400_bad_request_response(self, error_code, errors):
         return (
             self.fail()
@@ -136,7 +143,7 @@ class ResponseBuilder:
             .get_response()
         )
 
-    def get_500_internal_server_error(self, error_code, errors):
+    def get_500_internal_server_error_response(self, error_code, errors):
         return (
             self.fail()
             .internal_server_error()
