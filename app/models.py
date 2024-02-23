@@ -1,5 +1,7 @@
 from django.db import models
 from app.utils.utils import get_char_uuid
+from django.contrib.auth.hashers import make_password, check_password
+from django.conf import settings
 
 
 # db_index=True
@@ -25,7 +27,19 @@ class Author(BaseModel):
     name = models.CharField(max_length=255)
     email = models.EmailField(unique=True)
     bio = models.TextField(blank=True)
+    password = models.CharField(max_length=255)
     is_active = models.BooleanField(default=True)
+
+    def save(self, *args, **kwargs):
+        author = Author.objects.filter(pk=self.pk).first()
+        if not author:
+            self.password = make_password(self.password, salt=settings.SALT)
+            return super().save(*args, **kwargs)
+        password_changed = self.password != author.password
+        if not password_changed:
+            return super().save(*args, **kwargs)
+        self.password = make_password(self.password, salt=settings.SALT)
+        return super().save(*args, **kwargs)
 
     def __str__(self):
         return self.name
