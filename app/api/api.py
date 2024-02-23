@@ -18,6 +18,7 @@ CATEGORY_NOT_FOUND = 401
 # Comment
 COMMENT_NOT_FOUND = 402
 
+INTERNAL_SERVER_ERROR = 500
 
 error_messages = {
     INVALID_INPUT: 'Invalid input',
@@ -30,4 +31,5 @@ error_messages = {
     CATEGORY_NOT_FOUND: "Category not found",
     COMMENT_NOT_FOUND: "Comment not found",
     ADMIN_USER_NOT_FOUND: "Admin user not found",
+    INTERNAL_SERVER_ERROR: "Internal server error",
 }
