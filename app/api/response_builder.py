@@ -53,6 +53,10 @@ class ResponseBuilder:
         self.status = status.HTTP_403_FORBIDDEN
         return self
 
+    def internal_server_error(self):
+        self.status = status.HTTP_500_INTERNAL_SERVER_ERROR
+        return self
+
     # Set status code based on api.py
     def set_status_code(self, status_code):
         self.status_code = status_code
@@ -129,5 +133,14 @@ class ResponseBuilder:
             self.fail()
             .user_unauthorized_401()
             .set_status_code(error_code)
+            .get_response()
+        )
+
+    def get_500_internal_server_error(self, error_code, errors):
+        return (
+            self.fail()
+            .internal_server_error()
+            .set_status_code(error_code)
+            .error_object(errors)
             .get_response()
         )
