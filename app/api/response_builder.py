@@ -9,6 +9,7 @@ class ResponseBuilder:
     def __init__(self):
         self.results = {}
         self.errors = {}
+        self.page = {}
         '''
             Binary(1 or -1), later changes to code based on api.py (eg: 400)
             Sent with reponse in body(JSON format)
@@ -78,6 +79,10 @@ class ResponseBuilder:
         self.errors = errors
         return self
 
+    def page_object(self, page):
+        self.page = page
+        return self
+
     def get_response(self):
         content = self.get_json()
         return Response(content, status=self.status)
@@ -91,6 +96,7 @@ class ResponseBuilder:
             status_code=self.status_code,
             status_message=status_message,
             data=self.results,
+            page=self.page,
             error=self.errors,
         )
 
@@ -99,10 +105,11 @@ class ResponseBuilder:
         -> Result or Error (optional) -> Message(optional) -> Get Response
     '''
 
-    def get_200_success_response(self, message, result):
+    def get_200_success_response(self, message, result, page_info=None):
         return (
             self.success()
             .ok_200()
+            .page_object(page_info)
             .result_object(result)
             .message(message)
             .get_response()
