@@ -4,6 +4,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import JSONParser
 from app.api import ResponseBuilder, api
+from app.shared import paginate
 
 
 @api_view(['GET'])
@@ -12,9 +13,10 @@ def get_all_posts(request):
     response_builder = ResponseBuilder()
     try:
         posts = Post.get_all_posts()
-        serializer = PostSerializer(posts, many=True)
+        paginated_posts, page_info = paginate(posts, request)
+        serializer = PostSerializer(paginated_posts, many=True)
         return response_builder.get_200_success_response(
-            "Posts fetched successfully.", serializer.data
+            "Posts fetched successfully.", serializer.data, page_info
         )
     except ValueError as e:
         return response_builder.get_404_not_found_response(
@@ -52,9 +54,10 @@ def get_posts_by_author(request, id):
     response_builder = ResponseBuilder()
     try:
         posts = Post.get_posts_by_author(id)
-        serializer = PostSerializer(posts, many=True)
+        paginated_posts, page_info = paginate(posts, request)
+        serializer = PostSerializer(paginated_posts, many=True)
         return response_builder.get_200_success_response(
-            "Post fetched successfully.", serializer.data
+            "Posts fetched successfully.", serializer.data, page_info
         )
     except ValueError as e:
         return response_builder.get_404_not_found_response(
@@ -72,9 +75,10 @@ def get_posts_of_category(request, id):
     response_builder = ResponseBuilder()
     try:
         posts = Post.get_posts_of_category(id)
-        serializer = PostSerializer(posts, many=True)
+        paginated_posts, page_info = paginate(posts, request)
+        serializer = PostSerializer(paginated_posts, many=True)
         return response_builder.get_200_success_response(
-            "Post fetched successfully.", serializer.data
+            "Posts fetched successfully.", serializer.data, page_info
         )
     except ValueError as e:
         return response_builder.get_404_not_found_response(
