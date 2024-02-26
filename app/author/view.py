@@ -3,7 +3,6 @@ from .serializer import AuthorSerializer
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import JSONParser
-from django.views.decorators.csrf import csrf_exempt
 from app.api import ResponseBuilder, api
 from app.services import auth_service
 
