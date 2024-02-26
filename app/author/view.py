@@ -5,6 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import JSONParser
 from app.api import ResponseBuilder, api
 from app.services import auth_service
+from app.shared import paginate
 
 
 @api_view(['GET'])
@@ -18,9 +19,10 @@ def get_all_authors(request):
                 error_code=api.UNAUTHORIZED
             )
         authors = Author.get_all_authors()
-        serializer = AuthorSerializer(authors, many=True)
+        paginated_authors, page_info = paginate(authors, request)
+        serializer = AuthorSerializer(paginated_authors, many=True)
         return response_builder.get_200_success_response(
-            "Authors fetched successfully.", serializer.data
+            "Authors fetched successfully.", serializer.data, page_info
         )
     except ValueError as e:
         return response_builder.get_404_not_found_response(
