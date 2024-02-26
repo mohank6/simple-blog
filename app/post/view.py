@@ -1,19 +1,16 @@
 from .post import Post
 from .serializer import PostSerializer
-from rest_framework import status
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import JSONParser
-from django.views.decorators.csrf import csrf_exempt
-from rest_framework.exceptions import ValidationError
 from app.api import ResponseBuilder, api
 
 
 @api_view(['GET'])
-@csrf_exempt
+@permission_classes([IsAuthenticated])
 def get_all_posts(request):
+    response_builder = ResponseBuilder()
     try:
-        response_builder = ResponseBuilder()
         posts = Post.get_all_posts()
         serializer = PostSerializer(posts, many=True)
         return response_builder.get_200_success_response(
@@ -30,10 +27,10 @@ def get_all_posts(request):
 
 
 @api_view(['GET'])
-@csrf_exempt
+@permission_classes([IsAuthenticated])
 def get_post_by_id(request, id):
+    response_builder = ResponseBuilder()
     try:
-        response_builder = ResponseBuilder()
         post = Post.get_post_by_id(id)
         serializer = PostSerializer(post)
         return response_builder.get_200_success_response(
@@ -50,10 +47,10 @@ def get_post_by_id(request, id):
 
 
 @api_view(['GET'])
-@csrf_exempt
+@permission_classes([IsAuthenticated])
 def get_posts_by_author(request, id):
+    response_builder = ResponseBuilder()
     try:
-        response_builder = ResponseBuilder()
         posts = Post.get_posts_by_author(id)
         serializer = PostSerializer(posts, many=True)
         return response_builder.get_200_success_response(
@@ -70,10 +67,10 @@ def get_posts_by_author(request, id):
 
 
 @api_view(['GET'])
-@csrf_exempt
+@permission_classes([IsAuthenticated])
 def get_posts_of_category(request, id):
+    response_builder = ResponseBuilder()
     try:
-        response_builder = ResponseBuilder()
         posts = Post.get_posts_of_category(id)
         serializer = PostSerializer(posts, many=True)
         return response_builder.get_200_success_response(
@@ -90,10 +87,10 @@ def get_posts_of_category(request, id):
 
 
 @api_view(['POST'])
-@csrf_exempt
+@permission_classes([IsAuthenticated])
 def create_post(request):
+    response_builder = ResponseBuilder()
     try:
-        response_builder = ResponseBuilder()
         data = JSONParser().parse(request)
         serializer = PostSerializer(data=data)
         if serializer.is_valid():
@@ -111,10 +108,10 @@ def create_post(request):
 
 
 @api_view(['PUT', 'PATCH'])
-@csrf_exempt
+@permission_classes([IsAuthenticated])
 def update_post(request, id):
+    response_builder = ResponseBuilder()
     try:
-        response_builder = ResponseBuilder()
         is_PATCH = request.method == 'PATCH'
         post = Post.get_post_by_id(id)
         data = JSONParser().parse(request)
@@ -138,10 +135,10 @@ def update_post(request, id):
 
 
 @api_view(['DELETE'])
-@csrf_exempt
+@permission_classes([IsAuthenticated])
 def delete_post(request, id):
+    response_builder = ResponseBuilder()
     try:
-        response_builder = ResponseBuilder()
         Post.delete_post(id)
         return response_builder.get_204_no_content_response(message="Post deleted")
     except ValueError as e:
