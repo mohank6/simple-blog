@@ -1,18 +1,22 @@
 from .category import Category
 from .serializer import CategorySerializer
-from rest_framework import status
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import JSONParser
-from django.views.decorators.csrf import csrf_exempt
 from app.api import ResponseBuilder, api
+from app.services import auth_service
 
 
 @api_view(['GET'])
-@csrf_exempt
+@permission_classes([IsAuthenticated])
 def get_all_categories(request):
+    response_builder = ResponseBuilder()
     try:
-        response_builder = ResponseBuilder()
+        user = auth_service.get_current_user(request.user.id)
+        if not user.role == 'admin':
+            return response_builder.get_401_user_unauthorized(
+                error_code=api.UNAUTHORIZED
+            )
         categories = Category.get_all_categories()
         serializer = CategorySerializer(categories, many=True)
         return response_builder.get_200_success_response(
@@ -29,10 +33,15 @@ def get_all_categories(request):
 
 
 @api_view(['GET'])
-@csrf_exempt
+@permission_classes([IsAuthenticated])
 def get_category_by_id(request, id):
+    response_builder = ResponseBuilder()
     try:
-        response_builder = ResponseBuilder()
+        user = auth_service.get_current_user(request.user.id)
+        if not user.role == 'admin':
+            return response_builder.get_401_user_unauthorized(
+                error_code=api.UNAUTHORIZED
+            )
         category = Category.get_category_by_id(id)
         serializer = CategorySerializer(category)
         return response_builder.get_200_success_response(
@@ -49,10 +58,15 @@ def get_category_by_id(request, id):
 
 
 @api_view(['GET'])
-@csrf_exempt
+@permission_classes([IsAuthenticated])
 def get_category_by_name(request, name):
+    response_builder = ResponseBuilder()
     try:
-        response_builder = ResponseBuilder()
+        user = auth_service.get_current_user(request.user.id)
+        if not user.role == 'admin':
+            return response_builder.get_401_user_unauthorized(
+                error_code=api.UNAUTHORIZED
+            )
         category = Category.get_category_by_name(name)
         serializer = CategorySerializer(category)
         return response_builder.get_200_success_response(
@@ -69,10 +83,15 @@ def get_category_by_name(request, name):
 
 
 @api_view(['POST'])
-@csrf_exempt
+@permission_classes([IsAuthenticated])
 def create_category(request):
+    response_builder = ResponseBuilder()
     try:
-        response_builder = ResponseBuilder()
+        user = auth_service.get_current_user(request.user.id)
+        if not user.role == 'admin':
+            return response_builder.get_401_user_unauthorized(
+                error_code=api.UNAUTHORIZED
+            )
         data = JSONParser().parse(request)
         serializer = CategorySerializer(data=data)
         if serializer.is_valid():
@@ -90,10 +109,15 @@ def create_category(request):
 
 
 @api_view(['PUT', 'PATCH'])
-@csrf_exempt
+@permission_classes([IsAuthenticated])
 def update_category(request, id):
+    response_builder = ResponseBuilder()
     try:
-        response_builder = ResponseBuilder()
+        user = auth_service.get_current_user(request.user.id)
+        if not user.role == 'admin':
+            return response_builder.get_401_user_unauthorized(
+                error_code=api.UNAUTHORIZED
+            )
         is_PATCH = request.method == 'PATCH'
         category = Category.get_category_by_id(id)
         data = JSONParser().parse(request)
@@ -113,10 +137,15 @@ def update_category(request, id):
 
 
 @api_view(['DELETE'])
-@csrf_exempt
+@permission_classes([IsAuthenticated])
 def delete_category(request, id):
+    response_builder = ResponseBuilder()
     try:
-        response_builder = ResponseBuilder()
+        user = auth_service.get_current_user(request.user.id)
+        if not user.role == 'admin':
+            return response_builder.get_401_user_unauthorized(
+                error_code=api.UNAUTHORIZED
+            )
         category = Category.get_category_by_id(id)
         Category.delete_category(id)
         return response_builder.get_204_no_content_response(message="Category deleted")
