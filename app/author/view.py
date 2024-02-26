@@ -1,16 +1,23 @@
 from .author import Author
 from .serializer import AuthorSerializer
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import JSONParser
 from django.views.decorators.csrf import csrf_exempt
 from app.api import ResponseBuilder, api
+from app.services import auth_service
 
 
 @api_view(['GET'])
-@csrf_exempt
+@permission_classes([IsAuthenticated])
 def get_all_authors(request):
+    response_builder = ResponseBuilder()
     try:
-        response_builder = ResponseBuilder()
+        user = auth_service.get_current_user(request.user.id)
+        if not user.role == 'admin':
+            return response_builder.get_401_user_unauthorized(
+                error_code=api.UNAUTHORIZED
+            )
         authors = Author.get_all_authors()
         serializer = AuthorSerializer(authors, many=True)
         return response_builder.get_200_success_response(
@@ -27,10 +34,15 @@ def get_all_authors(request):
 
 
 @api_view(['GET'])
-@csrf_exempt
+@permission_classes([IsAuthenticated])
 def get_author_by_id(request, id):
+    response_builder = ResponseBuilder()
     try:
-        response_builder = ResponseBuilder()
+        user = auth_service.get_current_user(request.user.id)
+        if not user.role == 'admin' and not user.id == id:
+            return response_builder.get_401_user_unauthorized(
+                error_code=api.UNAUTHORIZED
+            )
         author = Author.get_author_by_id(id)
         serializer = AuthorSerializer(author)
         return response_builder.get_200_success_response(
@@ -47,10 +59,15 @@ def get_author_by_id(request, id):
 
 
 @api_view(['PUT', 'PATCH'])
-@csrf_exempt
+@permission_classes([IsAuthenticated])
 def update_author(request, id):
+    response_builder = ResponseBuilder()
     try:
-        response_builder = ResponseBuilder()
+        user = auth_service.get_current_user(request.user.id)
+        if not user.role == 'admin' and not user.id == id:
+            return response_builder.get_401_user_unauthorized(
+                error_code=api.UNAUTHORIZED
+            )
         data = JSONParser().parse(request)
         is_PATCH = request.method == 'PATCH'
         author = Author.get_author_by_id(id)
@@ -74,10 +91,15 @@ def update_author(request, id):
 
 
 @api_view(['DELETE'])
-@csrf_exempt
+@permission_classes([IsAuthenticated])
 def delete_author(request, id):
+    response_builder = ResponseBuilder()
     try:
-        response_builder = ResponseBuilder()
+        user = auth_service.get_current_user(request.user.id)
+        if not user.role == 'admin' and not user.id == id:
+            return response_builder.get_401_user_unauthorized(
+                error_code=api.UNAUTHORIZED
+            )
         author = Author.get_author_by_id(id)
         Author.delete_author(id)
         return response_builder.get_204_no_content_response(message="Author deleted")
