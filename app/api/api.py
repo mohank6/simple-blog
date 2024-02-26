@@ -6,7 +6,7 @@ TOO_MANY_REQUEST = 101
 INVALID_LOGIN_TOKEN = 300
 UNAUTHORIZED = 301
 AUTHOR_NOT_FOUND = 302
-INVALID_PASSWORD = 303
+INVALID_CREDENTIALS = 303
 ADMIN_USER_NOT_FOUND = 304
 
 # Post
@@ -26,7 +26,7 @@ error_messages = {
     INVALID_LOGIN_TOKEN: 'Invalid token for login',
     UNAUTHORIZED: "Unauthorized",
     AUTHOR_NOT_FOUND: "Author not found",
-    INVALID_PASSWORD: "Invalid password",
+    INVALID_CREDENTIALS: "Invalid credentials",
     POST_NOT_FOUND: "Post not found",
     CATEGORY_NOT_FOUND: "Category not found",
     COMMENT_NOT_FOUND: "Comment not found",
