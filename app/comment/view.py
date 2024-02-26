@@ -6,17 +6,19 @@ from rest_framework.response import Response
 from rest_framework.parsers import JSONParser
 from django.views.decorators.csrf import csrf_exempt
 from app.api import ResponseBuilder, api
+from app.shared import paginate
 
 
 @api_view(['GET'])
 @csrf_exempt
 def get_all_comments(request):
+    response_builder = ResponseBuilder()
     try:
-        response_builder = ResponseBuilder()
         comments = Comment.get_all_comments()
-        serializer = CommentSerializer(comments, many=True)
+        paginated_comments, page_info = paginate(comments, request)
+        serializer = CommentSerializer(paginated_comments, many=True)
         return response_builder.get_200_success_response(
-            "Comments fetched successfully.", serializer.data
+            "Comments fetched successfully.", serializer.data, page_info
         )
     except ValueError as e:
         return response_builder.get_404_not_found_response(
@@ -31,8 +33,8 @@ def get_all_comments(request):
 @api_view(['GET'])
 @csrf_exempt
 def get_comment_by_id(request, id):
+    response_builder = ResponseBuilder()
     try:
-        response_builder = ResponseBuilder()
         comment = Comment.get_comment_by_id(id)
         serializer = CommentSerializer(comment)
         return response_builder.get_200_success_response(
@@ -51,12 +53,13 @@ def get_comment_by_id(request, id):
 @api_view(['GET'])
 @csrf_exempt
 def get_all_comments_of_post(request, id):
+    response_builder = ResponseBuilder()
     try:
-        response_builder = ResponseBuilder()
-        comments = Comment.get_all_comments_of_post(id)
-        serializer = CommentSerializer(comments, many=True)
+        comments = Comment.get_all_comments()
+        paginated_comments, page_info = paginate(comments, request)
+        serializer = CommentSerializer(paginated_comments, many=True)
         return response_builder.get_200_success_response(
-            "Comments fetched successfully.", serializer.data
+            "Comments fetched successfully.", serializer.data, page_info
         )
     except ValueError as e:
         return response_builder.get_404_not_found_response(
@@ -71,8 +74,8 @@ def get_all_comments_of_post(request, id):
 @api_view(['POST'])
 @csrf_exempt
 def create_comment(request):
+    response_builder = ResponseBuilder()
     try:
-        response_builder = ResponseBuilder()
         data = JSONParser().parse(request)
         serializer = CommentSerializer(data=data)
         if serializer.is_valid():
@@ -96,8 +99,8 @@ def create_comment(request):
 @api_view(['PUT', 'PATCH'])
 @csrf_exempt
 def update_comment(request, id):
+    response_builder = ResponseBuilder()
     try:
-        response_builder = ResponseBuilder()
         is_PATCH = request.method == 'PATCH'
         comment = Comment.get_comment_by_id(id)
         data = JSONParser().parse(request)
@@ -123,8 +126,8 @@ def update_comment(request, id):
 @api_view(['DELETE'])
 @csrf_exempt
 def delete_comment(request, id):
+    response_builder = ResponseBuilder()
     try:
-        response_builder = ResponseBuilder()
         comment = Comment.delete_comment(id)
         return response_builder.get_204_no_content_response(message="Comment deleted.")
     except ValueError as e:
