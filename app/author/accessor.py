@@ -19,3 +19,8 @@ class AuthorAccessor:
         author = Author.objects.filter(id=id).first()
         author.is_active = False
         author.save()
+
+    @staticmethod
+    def get_author_by_email(email: str) -> Optional[Author]:
+        author = Author.objects.filter(email__iexact=email).first()
+        return author

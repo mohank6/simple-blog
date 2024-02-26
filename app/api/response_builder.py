@@ -111,6 +111,19 @@ class ResponseBuilder:
     def get_200_fail_response(self, error_code):
         return self.fail().ok_200().set_status_code(error_code).get_response()
 
+    @staticmethod
+    def get_200_logged_in(user, token):
+        response = {
+            'message': "Logged in successfully",
+            'token': token,
+            'user': {
+                'id': user.id,
+                'email': user.email,
+                'role': user.role,
+            },
+        }
+        return Response(response, status=status.HTTP_200_OK)
+
     def get_201_success_response(self, message, result):
         return (
             self.success()

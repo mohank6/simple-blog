@@ -1,5 +1,7 @@
 from app.author.accessor import AuthorAccessor
 from app.post import post as post_business
+from django.contrib.auth.hashers import check_password
+from app.services import auth_service
 
 
 class Author:
@@ -22,3 +24,14 @@ class Author:
     def delete_author(id):
         post_business.Post.delete_posts_by_author(id)
         AuthorAccessor.delete_author(id)
+
+    @staticmethod
+    def login(email, password):
+        author = AuthorAccessor.get_author_by_email(email=email)
+        if not author:
+            raise ValueError
+        is_valid = check_password(password=password, encoded=author.password)
+        if not is_valid:
+            raise ValueError
+        token = auth_service.generate_token(author)
+        return author, token
