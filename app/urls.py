@@ -8,6 +8,7 @@ from app.comment import view as comment_view
 urlpatterns = [
     path('v1/signup/', auth.signup, name='signup'),
     path('v1/login/', auth.login, name='login'),
+    path('v1/verify/', auth.verify_email, name='verify_email'),
     path('v1/authors/', author_view.get_all_authors, name='get_all_authors'),
     path('v1/authors/<str:id>', author_view.get_author_by_id, name='get_author_by_id'),
     path('v1/authors/update/<str:id>', author_view.update_author, name='update_author'),
