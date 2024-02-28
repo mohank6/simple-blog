@@ -35,6 +35,9 @@ class Author(BaseModel):
     USER = 'user'
     ROLES = ((ADMIN, ADMIN), (USER, USER))
     role = models.CharField(max_length=255, choices=ROLES, default=USER)
+    otp = models.IntegerField(null=True)
+    otp_sent_at = models.DateTimeField(null=True)
+    is_verified = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
         author = Author.objects.filter(pk=self.pk).first()
