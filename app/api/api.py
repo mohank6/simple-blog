@@ -8,6 +8,7 @@ UNAUTHORIZED = 301
 AUTHOR_NOT_FOUND = 302
 INVALID_CREDENTIALS = 303
 ADMIN_USER_NOT_FOUND = 304
+INVALID_OTP = 305
 
 # Post
 POST_NOT_FOUND = 400
@@ -27,6 +28,7 @@ error_messages = {
     UNAUTHORIZED: "Unauthorized",
     AUTHOR_NOT_FOUND: "Author not found",
     INVALID_CREDENTIALS: "Invalid credentials",
+    INVALID_OTP: "Invalid otp",
     POST_NOT_FOUND: "Post not found",
     CATEGORY_NOT_FOUND: "Category not found",
     COMMENT_NOT_FOUND: "Comment not found",
