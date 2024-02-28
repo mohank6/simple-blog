@@ -14,6 +14,11 @@ class AuthorSerializer(serializers.ModelSerializer):
         validate_password(value)
         return value
 
+    def update(self, instance, validated_data):
+        if 'password' in validated_data:
+            del validated_data['password']
+        return super().update(instance, validated_data)
+
 
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
@@ -23,3 +28,13 @@ class LoginSerializer(serializers.Serializer):
 class OtpSerializer(serializers.Serializer):
     email = serializers.EmailField()
     otp = serializers.IntegerField()
+
+
+class ResetPasswordSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    password = serializers.CharField()
+    otp = serializers.IntegerField()
+
+    def validate_password(self, value):
+        validate_password(value)
+        return value
