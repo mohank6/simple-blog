@@ -41,22 +41,38 @@ class Author:
     @staticmethod
     def generate_and_send_otp(email):
         author = AuthorAccessor.get_author_by_email(email=email)
+        if not author:
+            raise ValueError('Author does not exists')
         email_service.generate_and_send_otp(author)
 
     @staticmethod
     def verify_otp(email, otp):
         author = AuthorAccessor.get_author_by_email(email=email)
         if not author:
-            raise ValueError
+            raise ValueError('Author does not exists')
         if author.is_verified:
-            return None, {'verified': 'User is already verified'}
+            raise ValueError('Author is already verified')
         is_valid = author.otp == otp and (
             datetime.now(timezone.utc) - author.otp_sent_at
         ) < timedelta(minutes=10)
         if not is_valid:
-            raise ValueError
+            raise ValueError('Invalid OTP')
         author.otp = None
         author.is_verified = True
         author.save()
         token = auth_service.generate_token(author)
         return author, token
+
+    @staticmethod
+    def reset_password(email, otp, password):
+        author = AuthorAccessor.get_author_by_email(email=email)
+        if not author:
+            raise ValueError('Author does not exists')
+        is_valid = author.otp == otp and (
+            datetime.now(timezone.utc) - author.otp_sent_at
+        ) < timedelta(minutes=10)
+        if not is_valid:
+            raise ValueError('Inavlid OTP')
+        author.password = password
+        author.otp = None
+        author.save()
