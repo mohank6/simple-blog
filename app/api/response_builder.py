@@ -155,10 +155,11 @@ class ResponseBuilder:
     def get_404_not_found_response(self, error_code):
         return self.fail().not_found_404().set_status_code(error_code).get_response()
 
-    def get_401_user_unauthorized(self, error_code):
+    def get_401_user_unauthorized(self, error_code, errors=None):
         return (
             self.fail()
             .user_unauthorized_401()
+            .error_object(errors)
             .set_status_code(error_code)
             .get_response()
         )

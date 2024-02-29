@@ -31,7 +31,9 @@ class Author:
     def login(email, password):
         author = AuthorAccessor.get_author_by_email(email=email)
         if not author:
-            raise ValueError
+            raise ValueError('Author does not exists')
+        if not author.is_verified:
+            raise ValueError('Author is not verified')
         is_valid = check_password(password=password, encoded=author.password)
         if not is_valid:
             raise ValueError
@@ -46,12 +48,7 @@ class Author:
         email_service.generate_and_send_otp(author)
 
     @staticmethod
-    def verify_otp(email, otp):
-        author = AuthorAccessor.get_author_by_email(email=email)
-        if not author:
-            raise ValueError('Author does not exists')
-        if author.is_verified:
-            raise ValueError('Author is already verified')
+    def verify_otp(author, otp):
         is_valid = author.otp == otp and (
             datetime.now(timezone.utc) - author.otp_sent_at
         ) < timedelta(minutes=10)
@@ -60,19 +57,30 @@ class Author:
         author.otp = None
         author.is_verified = True
         author.save()
-        token = auth_service.generate_token(author)
-        return author, token
+        return author
 
-    @staticmethod
-    def reset_password(email, otp, password):
+    @classmethod
+    def verify_email(cls, email, otp):
         author = AuthorAccessor.get_author_by_email(email=email)
         if not author:
             raise ValueError('Author does not exists')
-        is_valid = author.otp == otp and (
-            datetime.now(timezone.utc) - author.otp_sent_at
-        ) < timedelta(minutes=10)
-        if not is_valid:
-            raise ValueError('Inavlid OTP')
+        if author.is_verified:
+            raise ValueError('Author is already verified')
+        try:
+            cls.verify_otp(author, otp)
+        except Exception as e:
+            raise e
+
+        return author
+
+    @classmethod
+    def reset_password(cls, email, otp, password):
+        author = AuthorAccessor.get_author_by_email(email=email)
+        if not author:
+            raise ValueError('Author does not exists')
+        try:
+            cls.verify_otp(author, otp)
+        except Exception as e:
+            raise e
         author.password = password
-        author.otp = None
         author.save()
