@@ -51,7 +51,7 @@ def login(request):
         )
     except ValueError as e:
         return response_builder.get_401_user_unauthorized(
-            error_code=api.INVALID_CREDENTIALS
+            error_code=api.INVALID_CREDENTIALS, errors=str(e)
         )
 
     except Exception as e:
@@ -71,8 +71,9 @@ def verify_email(request):
                 serializer.validated_data['email'],
                 serializer.validated_data['otp'],
             )
-            author, token = Author.verify_otp(email, otp)
-            return response_builder.get_200_logged_in(author, token)
+            author = Author.verify_email(email, otp)
+            author_serializer = AuthorSerializer(author)
+            return response_builder.get_200_success_response(author)
         return response_builder.get_400_bad_request_response(
             error_code=api.INVALID_INPUT, errors=serializer.errors
         )
@@ -94,7 +95,9 @@ def forgot_password(request):
         response_builder = ResponseBuilder()
         email = request.data.get('email')
         Author.generate_and_send_otp(email=email)
-        return response_builder.get_200_success_response(message='OTP sent to email')
+        return response_builder.get_200_success_response(
+            message='OTP sent to email', result={}
+        )
     except ValueError as e:
         return response_builder.get_400_bad_request_response(
             error_code=api.AUTHOR_NOT_FOUND, errors=str(e)
