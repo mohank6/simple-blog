@@ -1,9 +1,11 @@
+from django.forms import ValidationError
 from app.author.accessor import AuthorAccessor
 from app.post import post as post_business
 from django.contrib.auth.hashers import check_password
 from app.services import auth_service
 from datetime import timedelta, datetime, timezone
 from app.services import email_service
+from django.contrib.auth.password_validation import validate_password
 
 
 class Author:
@@ -54,9 +56,7 @@ class Author:
         ) < timedelta(minutes=10)
         if not is_valid:
             raise ValueError('Invalid OTP')
-        author.otp = None
-        author.is_verified = True
-        author.save()
+        author = AuthorAccessor.verify_author(author)
         return author
 
     @classmethod
@@ -67,11 +67,11 @@ class Author:
         if author.is_verified:
             raise ValueError('Author is already verified')
         try:
-            cls.verify_otp(author, otp)
+            author_verified = cls.verify_otp(author, otp)
         except Exception as e:
             raise e
 
-        return author
+        return author_verified
 
     @classmethod
     def reset_password(cls, email, otp, password):
@@ -82,5 +82,13 @@ class Author:
             cls.verify_otp(author, otp)
         except Exception as e:
             raise e
-        author.password = password
-        author.save()
+        AuthorAccessor.update_password(author, password)
+
+    @staticmethod
+    def change_password(author, password):
+        try:
+            validate_password(password)
+        except ValidationError as e:
+            raise e
+        AuthorAccessor.update_password(author, password)
+        return author

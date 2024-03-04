@@ -105,7 +105,7 @@ class ResponseBuilder:
         -> Result or Error (optional) -> Message(optional) -> Get Response
     '''
 
-    def get_200_success_response(self, message, result, page_info=None):
+    def get_200_success_response(self, message, result=None, page_info=None):
         return (
             self.success()
             .ok_200()

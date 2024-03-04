@@ -6,11 +6,13 @@ from rest_framework.parsers import JSONParser
 from app.api import ResponseBuilder, api
 from app.services import auth_service
 from app.shared import paginate
+import logging
 
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_all_authors(request):
+    logging.info('Get request on /api/v1/authors/')
     response_builder = ResponseBuilder()
     try:
         user = auth_service.get_current_user(request.user.id)
