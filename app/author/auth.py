@@ -1,3 +1,4 @@
+from django.forms import ValidationError
 from .author import Author
 from .serializer import (
     AuthorSerializer,
@@ -5,17 +6,19 @@ from .serializer import (
     OtpSerializer,
     ResetPasswordSerializer,
 )
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.parsers import JSONParser
 from django.views.decorators.csrf import csrf_exempt
 from app.api import ResponseBuilder, api
+from rest_framework.permissions import IsAuthenticated
+from app.services import auth_service
 
 
 @api_view(['POST'])
 @csrf_exempt
 def signup(request):
+    response_builder = ResponseBuilder()
     try:
-        response_builder = ResponseBuilder()
         data = JSONParser().parse(request)
         serializer = AuthorSerializer(data=data)
         if serializer.is_valid():
@@ -36,8 +39,8 @@ def signup(request):
 @api_view(['POST'])
 @csrf_exempt
 def login(request):
+    response_builder = ResponseBuilder()
     try:
-        response_builder = ResponseBuilder()
         serializer = LoginSerializer(data=request.POST)
         if serializer.is_valid():
             email, password = (
@@ -63,8 +66,8 @@ def login(request):
 @api_view(['POST'])
 @csrf_exempt
 def verify_email(request):
+    response_builder = ResponseBuilder()
     try:
-        response_builder = ResponseBuilder()
         serializer = OtpSerializer(data=request.POST)
         if serializer.is_valid():
             email, otp = (
@@ -91,8 +94,8 @@ def verify_email(request):
 @api_view(['POST'])
 @csrf_exempt
 def forgot_password(request):
+    response_builder = ResponseBuilder()
     try:
-        response_builder = ResponseBuilder()
         email = request.data.get('email')
         Author.generate_and_send_otp(email=email)
         return response_builder.get_200_success_response(
@@ -112,8 +115,8 @@ def forgot_password(request):
 @api_view(['POST'])
 @csrf_exempt
 def reset_password(request):
+    response_builder = ResponseBuilder()
     try:
-        response_builder = ResponseBuilder()
         serializer = ResetPasswordSerializer(data=request.POST)
         if serializer.is_valid():
             email, otp, password = (
@@ -127,6 +130,32 @@ def reset_password(request):
             )
         return response_builder.get_400_bad_request_response(
             error_code=api.INVALID_INPUT, errors=serializer.errors
+        )
+    except ValueError as e:
+        return response_builder.get_400_bad_request_response(
+            error_code=api.INVALID_INPUT, errors=str(e)
+        )
+
+    except Exception as e:
+        return response_builder.get_500_internal_server_error_response(
+            error_code=api.INTERNAL_SERVER_ERROR, errors=str(e)
+        )
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def change_password(request):
+    response_builder = ResponseBuilder()
+    try:
+        user = auth_service.get_current_user(request.user.id)
+        password = request.data.get('password')
+        Author.change_password(user, password)
+        return response_builder.get_200_success_response(
+                message='Password changed successfully.', result={}
+            )
+    except ValidationError as e:
+        return response_builder.get_400_bad_request_response(
+            error_code=api.INVALID_INPUT, errors=str(e)
         )
     except ValueError as e:
         return response_builder.get_400_bad_request_response(

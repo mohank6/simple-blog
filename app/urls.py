@@ -11,6 +11,7 @@ urlpatterns = [
     path('v1/verify/', auth.verify_email, name='verify_email'),
     path('v1/forgot-password/', auth.forgot_password, name='forgot_password'),
     path('v1/reset-password/', auth.reset_password, name='reset_password'),
+    path('v1/change-password/', auth.change_password, name='change_password'),
     path('v1/authors/', author_view.get_all_authors, name='get_all_authors'),
     path('v1/authors/<str:id>', author_view.get_author_by_id, name='get_author_by_id'),
     path('v1/authors/update/<str:id>', author_view.update_author, name='update_author'),

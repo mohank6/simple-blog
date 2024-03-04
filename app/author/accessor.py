@@ -24,3 +24,16 @@ class AuthorAccessor:
     def get_author_by_email(email: str) -> Optional[Author]:
         author = Author.objects.filter(email__iexact=email).first()
         return author
+
+    @staticmethod
+    def verify_author(author: Author) -> Optional[Author]:
+        author.otp = None
+        author.is_verified = True
+        author.save()
+        return author
+
+    @staticmethod
+    def update_password(author: Author, password: str) -> Optional[Author]:
+        author.password = password
+        author.save()
+        return author
