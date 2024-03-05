@@ -14,18 +14,15 @@ from pathlib import Path
 from dotenv import load_dotenv
 import os
 from datetime import timedelta
-import logging
-
-logging.basicConfig(
-    level=logging.DEBUG,
-    format="%(asctime)s %(levelname)s %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S",
-    # filename="test.log",
-)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / '.env')
+
+LOG_DIR = os.path.join(BASE_DIR, 'log')
+
+if not os.path.exists(LOG_DIR):
+    os.mkdir(LOG_DIR)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
@@ -50,6 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'app.apps.AppConfig',
     'rest_framework',
+    "django_google_sso",
 ]
 
 REST_FRAMEWORK = {
@@ -160,3 +158,81 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+
+GOOGLE_SSO_CLIENT_ID = os.getenv('GOOGLE_SSO_CLIENT_ID')
+GOOGLE_SSO_PROJECT_ID = os.getenv('GOOGLE_SSO_PROJECT_ID')
+GOOGLE_SSO_CLIENT_SECRET = os.getenv('GOOGLE_SSO_CLIENT_SECRET')
+GOOGLE_SSO_ALLOWABLE_DOMAINS = ["gmail.com"]
+
+AUTH_USER_MODEL = 'app.Author'
+
+# LOGGING = {
+#     "version": 1,
+#     "disable_existing_loggers": False,
+#     "handlers": {
+#         "file": {
+#             "class": "logging.FileHandler",
+#             "filename": "general.log",
+#             "level": "DEBUG",
+#         },
+#     },
+# }
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": True,
+    "formatters": {
+        "verbose": {
+            "format": "{levelname} {asctime} {module} {process:d} {thread:d} {message}",
+            "style": "{",
+        },
+        "simple": {
+            "format": "{levelname} {message}",
+            "style": "{",
+        },
+    },
+    "filters": {
+        "require_debug_true": {
+            "()": "django.utils.log.RequireDebugTrue",
+        },
+    },
+    "handlers": {
+        "console": {
+            "level": "INFO",
+            "filters": ["require_debug_true"],
+            "class": "logging.StreamHandler",
+            "formatter": "simple",
+        },
+        "info": {
+            "level": "INFO",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": os.path.join(LOG_DIR, "info.log"),
+            "formatter": "verbose",
+            "maxBytes": 10241024300,
+            "backupCount": 5,
+        },
+        "warning": {
+            "level": "WARNING",
+            "class": "logging.handlers.RotatingFileHandler",
+            "formatter": "verbose",
+            "filename": os.path.join(LOG_DIR, "warning.log"),
+            "maxBytes": 10241024300,
+            "backupCount": 5,
+        },
+    },
+    "root": {
+        "level": "INFO",
+        "handlers": ["console", "info", "warning"],
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console"],
+            "propagate": True,
+        },
+        "info_log": {
+            "handlers": ["info"],
+            "propagate": True,
+            "level": "INFO",
+        },
+        "warning_log": {"handlers": ["warning"], "propagate": True, "level": "WARNING"},
+    },
+}
