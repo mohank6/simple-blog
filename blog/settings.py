@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'app.apps.AppConfig',
     'rest_framework',
     "django_google_sso",
+    "import_export",
 ]
 
 REST_FRAMEWORK = {
@@ -58,8 +59,8 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=os.getenv('ACCESS_TOKEN_LIFETIME')),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=os.getenv('REFRESH_TOKEN_LIFETIME')),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=int(os.getenv('ACCESS_TOKEN_LIFETIME'))),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=int(os.getenv('REFRESH_TOKEN_LIFETIME'))),
     'ROTATE_REFRESH_TOKENS': False,
     'ALGORITHM': 'HS512',
     'SIGNING_KEY': SECRET_KEY,
@@ -163,8 +164,6 @@ GOOGLE_SSO_CLIENT_ID = os.getenv('GOOGLE_SSO_CLIENT_ID')
 GOOGLE_SSO_PROJECT_ID = os.getenv('GOOGLE_SSO_PROJECT_ID')
 GOOGLE_SSO_CLIENT_SECRET = os.getenv('GOOGLE_SSO_CLIENT_SECRET')
 GOOGLE_SSO_ALLOWABLE_DOMAINS = ["gmail.com"]
-
-AUTH_USER_MODEL = 'app.Author'
 
 # LOGGING = {
 #     "version": 1,
