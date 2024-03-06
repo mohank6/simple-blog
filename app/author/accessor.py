@@ -1,5 +1,6 @@
 from app.models import Author
 from typing import Optional, List
+from django.db.models import Q, F
 
 
 class AuthorAccessor:
@@ -12,6 +13,19 @@ class AuthorAccessor:
     @staticmethod
     def get_all_authors() -> Optional[List[Author]]:
         authors = Author.objects.filter(is_active=True).all()
+        return authors
+
+    @staticmethod
+    def search_author(query: str) -> Optional[List[Author]]:
+        authors = (
+            Author.objects.filter(Q(name__icontains=query) | Q(email__icontains=query))
+            .annotate(
+                name_match=Q(name__icontains=query),
+                email_match=Q(email__icontains=query),
+            )
+            .order_by('-name_match', '-email_match')
+            .all()
+        )
         return authors
 
     @staticmethod

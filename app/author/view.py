@@ -61,6 +61,32 @@ def get_author_by_id(request, id):
         )
 
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def search_author(request):
+    response_builder = ResponseBuilder()
+    try:
+        user = auth_service.get_current_user(request.user.id)
+        if not user.role == 'admin':
+            return response_builder.get_401_user_unauthorized(
+                error_code=api.UNAUTHORIZED
+            )
+        query = request.query_params.get('q', '')
+        authors = Author.search_author(query)
+        serializer = AuthorSerializer(authors, many=True)
+        return response_builder.get_200_success_response(
+            "Author fetched successfully.", serializer.data
+        )
+    except ValueError as e:
+        return response_builder.get_404_not_found_response(
+            error_code=api.AUTHOR_NOT_FOUND
+        )
+    except Exception as e:
+        return response_builder.get_500_internal_server_error_response(
+            error_code=api.INTERNAL_SERVER_ERROR, errors=str(e)
+        )
+
+
 @api_view(['PUT', 'PATCH'])
 @permission_classes([IsAuthenticated])
 def update_author(request, id):

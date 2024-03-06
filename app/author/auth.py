@@ -12,6 +12,7 @@ from django.views.decorators.csrf import csrf_exempt
 from app.api import ResponseBuilder, api
 from rest_framework.permissions import IsAuthenticated
 from app.services import auth_service
+import logging
 
 
 @api_view(['POST'])
@@ -76,7 +77,7 @@ def verify_email(request):
             )
             author = Author.verify_email(email, otp)
             author_serializer = AuthorSerializer(author)
-            return response_builder.get_200_success_response(author)
+            return response_builder.get_200_success_response(author_serializer.data)
         return response_builder.get_400_bad_request_response(
             error_code=api.INVALID_INPUT, errors=serializer.errors
         )
@@ -151,8 +152,8 @@ def change_password(request):
         password = request.data.get('password')
         Author.change_password(user, password)
         return response_builder.get_200_success_response(
-                message='Password changed successfully.', result={}
-            )
+            message='Password changed successfully.', result={}
+        )
     except ValidationError as e:
         return response_builder.get_400_bad_request_response(
             error_code=api.INVALID_INPUT, errors=str(e)
