@@ -25,6 +25,14 @@ class Author:
         return author
 
     @staticmethod
+    def search_author(query):
+        query = query.split('@')[0]
+        authors = AuthorAccessor.search_author(query)
+        if not authors:
+            raise ValueError
+        return authors
+
+    @staticmethod
     def delete_author(id):
         post_business.Post.delete_posts_by_author(id)
         AuthorAccessor.delete_author(id)

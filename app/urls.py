@@ -13,6 +13,7 @@ urlpatterns = [
     path('v1/reset-password/', auth.reset_password, name='reset_password'),
     path('v1/change-password/', auth.change_password, name='change_password'),
     path('v1/authors/', author_view.get_all_authors, name='get_all_authors'),
+    path('v1/authors/search/', author_view.search_author, name='search_author'),
     path('v1/authors/<str:id>', author_view.get_author_by_id, name='get_author_by_id'),
     path('v1/authors/update/<str:id>', author_view.update_author, name='update_author'),
     path('v1/authors/delete/<str:id>', author_view.delete_author, name='delete_author'),
@@ -28,6 +29,11 @@ urlpatterns = [
         'v1/categories/name/<str:name>',
         categories_view.get_category_by_name,
         name='get_category_by_name',
+    ),
+    path(
+        'v1/categories/csv/create/',
+        categories_view.create_category_using_csv,
+        name='create_category_using_csv',
     ),
     path(
         'v1/categories/create/', categories_view.create_category, name='create_category'
