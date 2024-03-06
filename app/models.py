@@ -38,9 +38,6 @@ class Author(BaseModel):
     otp = models.IntegerField(null=True)
     otp_sent_at = models.DateTimeField(null=True)
     is_verified = models.BooleanField(default=False)
-    is_staff = False
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = []
 
     def save(self, *args, **kwargs):
         author = Author.objects.filter(pk=self.pk).first()
@@ -52,23 +49,6 @@ class Author(BaseModel):
             return super().save(*args, **kwargs)
         self.password = make_password(self.password, salt=settings.SALT)
         return super().save(*args, **kwargs)
-
-    @property
-    def is_anonymous(self):
-        return True
-
-    @property
-    def is_authenticated(self):
-        return False
-
-    def get_username(self):
-        return self.username
-
-    def set_unusable_password(self):
-        self.password = make_password(None)
-
-    def __str__(self):
-        return self.name
 
 
 class Category(BaseModel):

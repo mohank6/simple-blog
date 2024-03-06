@@ -1,5 +1,6 @@
 from django.contrib import admin
 from .models import Author, Category, Post
+from import_export.admin import ImportExportModelAdmin
 
 
 @admin.register(Author)
@@ -10,7 +11,7 @@ class AuthorAdmin(admin.ModelAdmin):
 
 
 @admin.register(Category)
-class CategoryAdmin(admin.ModelAdmin):
+class CategoryAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     list_display = ('name', 'created_at', 'updated_at')
     search_fields = ('name',)
 
