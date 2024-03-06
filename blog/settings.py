@@ -58,8 +58,8 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=os.getenv('ACCESS_TOKEN_LIFETIME')),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=os.getenv('REFRESH_TOKEN_LIFETIME')),
     'ROTATE_REFRESH_TOKENS': False,
     'ALGORITHM': 'HS512',
     'SIGNING_KEY': SECRET_KEY,
